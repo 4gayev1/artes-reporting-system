@@ -2,9 +2,9 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TABLE IF NOT EXISTS reports (
   id UUID PRIMARY KEY,
-  type VARCHAR(50) DEFAULT 'unknown',
+  type VARCHAR(50) DEFAULT 'other',
   name VARCHAR(255) NOT NULL,
   file_url TEXT NOT NULL,
-  project VARCHAR(100) DEFAULT 'unknown',
+  project VARCHAR(100) DEFAULT 'other',
   upload_date TIMESTAMP DEFAULT NOW()
 );

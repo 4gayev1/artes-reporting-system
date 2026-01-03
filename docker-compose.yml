@@ -21,7 +21,7 @@ services:
       - artes-service
 
   db:
-    image: postgres:15
+    image: ./artes-db
     container_name: artes-db
     environment:
       POSTGRES_DB: artes_reports
@@ -30,7 +30,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./artes-service/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg_data:/var/lib/postgresql/data
 
   minio:
     image: minio/minio
