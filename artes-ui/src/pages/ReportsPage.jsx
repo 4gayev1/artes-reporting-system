@@ -270,16 +270,19 @@ export default function ReportsPage() {
                 className={`rounded-xl shadow-lg p-5 relative transition-colors duration-500
                   ${darkMode ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"}`}
               >
-               
-                <button
-                  onClick={async () => {
-                    await getReportById(r.id);
-                  }}
-                  className={`text-xl font-bold hover:underline mb-2 block
-                    ${darkMode ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-500"}`}
-                >
-                  {r.name}
-                </button>
+               <button
+                      onClick={async () => {
+                        const res = await getReportById(r.id);
+                        console.log(res.data.url)
+                        window.open(
+                          res.data.url,
+                          "_blank",
+                        );
+                      }}
+                      className="text-xl font-bold text-blue-400 hover:text-blue-300  bg-transparent border-0 p-0 cursor-pointer"
+                    >
+                      {r.name}
+                    </button>
                 <div
                   className={`mt-2 space-y-1 ${darkMode ? "text-gray-300" : "text-gray-700"}`}
                 >
@@ -299,50 +302,61 @@ export default function ReportsPage() {
             ))}
           </div>
         ) : (
-          <table
-            className={`w-full border-collapse rounded-lg overflow-hidden shadow-md transition-colors duration-500
-            ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700" : "bg-white text-gray-900 border-gray-300"}`}
-          >
-            <thead>
-              <tr
-                className={`${darkMode ? "bg-gray-700 text-gray-100" : "bg-gray-100 text-gray-900"}`}
-              >
-                <th className="p-3 text-left">Name</th>
-                <th className="p-3 text-left">Project</th>
-                <th className="p-3 text-left">Type</th>
-                <th className="p-3 text-left">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports?.reports?.map((r) => (
+          <div className="w-full flex justify-center ">
+            <table
+              className={`w-full border-collapse rounded-lg overflow-hidden shadow-md
+              transition-colors duration-500
+              ${darkMode
+                ? "bg-gray-800 text-gray-100 border border-gray-700"
+                : "bg-white text-gray-900 border border-gray-300"
+              }`}
+            >
+              <thead>
                 <tr
-                  key={r.id}
-                  className={`${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"} border-b`}
+                  className={`${darkMode
+                    ? "bg-gray-700 text-gray-100"
+                    : "bg-gray-100 text-gray-900"
+                  }`}
                 >
-                  <td className="p-3">
-                    <button
-                      onClick={async () => {
-                        const res = await getReportById(r.id);
-                        console.log(res.data.url)
-                        window.open(
-                          res.data.url,
-                          "_blank",
-                        );
-                      }}
-                      className="text-blue-400 hover:text-blue-300 underline bg-transparent border-0 p-0 cursor-pointer"
-                    >
-                      {r.name}
-                    </button>
-                  </td>
-                  <td className="p-3">{r.project}</td>
-                  <td className="p-3">{r.type}</td>
-                  <td className="p-3">
-                    {dayjs(r.date).format("YYYY-MM-DD HH:mm:ss")}
-                  </td>
+                  <th className="p-3 text-center">Name</th>
+                  <th className="p-3 text-center">Project</th>
+                  <th className="p-3 text-center ">Type</th>
+                  <th className="p-3 text-center">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+    
+              <tbody >
+                {reports?.reports?.map((r) => (
+                  <tr
+                    key={r.id}
+                    className={`${darkMode
+                      ? "hover:bg-gray-700 border-gray-700"
+                      : "hover:bg-gray-50 border-gray-300"
+                    } border-b`}
+                  >
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={async () => {
+                          const res = await getReportById(r.id);
+                          window.open(res.data.url, "_blank");
+                        }}
+                        className="font-bold text-blue-400 hover:text-blue-300 bg-transparent border-0 p-0 cursor-pointer truncate"
+                        title={r.name}
+                      >
+                        {r.name}
+                      </button>
+                    </td>
+    
+                    <td className=" text-center">{r.project}</td>
+                    <td className=" text-center">{r.type}</td>
+                    <td className=" text-center">
+                      {dayjs(r.upload_date).format("YYYY-MM-DD HH:mm:ss")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+        </div>
         )}
 
         {showModal && (
