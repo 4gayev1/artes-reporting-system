@@ -13,9 +13,10 @@ async function uploadReport(req, res) {
     const extension = reportFile.originalname.split(".").pop();
     const id = uuidv4();
     const date = new Date().toISOString();
+    const t = type || "other";
     const proj = project || "other";
 
-    const objectName = `${type}/${proj}/${name}-${date}.${extension}`;
+    const objectName = `${t}/${proj}/${name}-${date}.${extension}`;
 
     await minioClient.putObject("artes-reports", objectName, reportFile.buffer);
 
@@ -27,7 +28,7 @@ async function uploadReport(req, res) {
       RETURNING *;
     `;
 
-    const result = await pool.query(query, [id, type, name, fileUrl, proj]);
+    const result = await pool.query(query, [id, t, name, fileUrl, proj]);
 
     res.json({
       message: "Report uploaded successfully",
