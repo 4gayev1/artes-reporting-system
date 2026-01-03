@@ -13,8 +13,8 @@ async function uploadReport(req, res) {
     const extension = reportFile.originalname.split(".").pop();
     const id = uuidv4();
     const date = new Date().toISOString();
-    const t = type || "other";
-    const proj = project || "other";
+    const t = type || "unknown";
+    const proj = project || "unknown";
 
     const objectName = `${t}/${proj}/${name}-${date}.${extension}`;
 

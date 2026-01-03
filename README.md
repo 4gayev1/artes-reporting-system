@@ -159,8 +159,8 @@ POST /report
 | Field   | Required | Description        |
 | ------- | -------- | ------------------ |
 | name    | ✅       | Report name        |
-| type    | ❌       | Default: `other`   |
-| project | ❌       | Default: `other`   |
+| type    | ❌       | Default: `unknown`   |
+| project | ❌       | Default: `unknown`   |
 | file    | ✅       | HTML file or ZIP   |
 
 ---
