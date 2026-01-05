@@ -180,7 +180,7 @@ export default function ReportsPage() {
             <select
               value={filters.project}
               onChange={(e) => handleFilterChange("project", e.target.value)}
-              className={`p-3 pl-10 pr-10 rounded-lg shadow-md w-full transition-colors duration-500 appearance-none
+              className={`p-3 pl-10 pr-10 border rounded-lg shadow-md w-full transition-colors duration-500 appearance-none
       ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700" : "bg-white text-gray-900 border-gray-400"}`}
             >
               <option value="">All Projects</option>
@@ -204,7 +204,7 @@ export default function ReportsPage() {
             <select
               value={filters.type}
               onChange={(e) => handleFilterChange("type", e.target.value)}
-              className={`p-3 pl-10 pr-10 rounded-lg shadow-md w-full transition-colors duration-500 appearance-none
+              className={`p-3 pl-10 pr-10 border rounded-lg shadow-md w-full transition-colors duration-500 appearance-none
       ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700" : "bg-white text-gray-900 border-gray-400"}`}
             >
               <option value="">All Types</option>
@@ -236,7 +236,7 @@ export default function ReportsPage() {
                 type="date"
                 value={filters.fromDate}
                 onChange={(e) => handleFilterChange("fromDate", e.target.value)}
-                className={`w-full p-3 pl-10 pr-4 rounded-lg shadow-md transition-colors duration-500
+                className={`w-full p-3 pl-10 pr-4 border rounded-lg shadow-md transition-colors duration-500
         ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700" : "bg-white text-gray-900 border-gray-400"}`}
               />
               <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -253,7 +253,7 @@ export default function ReportsPage() {
                 type="date"
                 value={filters.toDate}
                 onChange={(e) => handleFilterChange("toDate", e.target.value)}
-                className={`w-full p-3 pl-10 pr-4 rounded-lg shadow-md transition-colors duration-500
+                className={`w-full p-3 pl-10 pr-4 border rounded-lg shadow-md transition-colors duration-500
         ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700" : "bg-white text-gray-900 border-gray-400"}`}
               />
               <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
