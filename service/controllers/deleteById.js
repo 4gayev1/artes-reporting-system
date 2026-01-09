@@ -15,7 +15,7 @@ async function deleteById(req, res) {
 
     const report = result.rows[0];
 
-    const fileUrlParts = report.file_url.split("/");
+    const fileUrlParts = report.report_url.split("/");
     const objectName = fileUrlParts.slice(4).join("/");
 
     await minioClient.removeObject("artes-reports", objectName);

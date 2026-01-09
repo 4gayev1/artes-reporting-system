@@ -44,7 +44,7 @@ async function deleteAll(req, res) {
       : "";
 
     const selectQuery = `
-      SELECT id, file_url
+      SELECT id, report_url
       FROM reports
       ${whereSQL}
     `;
@@ -57,7 +57,7 @@ async function deleteAll(req, res) {
 
     await Promise.all(
       rows.map((report) => {
-        const objectName = report.file_url.split("/").slice(4).join("/");
+        const objectName = report.report_url.split("/").slice(4).join("/");
         return minioClient
           .removeObject("artes-reports", objectName)
           .catch((err) => {
