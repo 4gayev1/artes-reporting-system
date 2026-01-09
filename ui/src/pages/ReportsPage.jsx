@@ -19,6 +19,7 @@ import {
   FiGrid,
   FiList,
   FiEdit,
+  FiDownload
 } from "react-icons/fi";
 
 export default function ReportsPage() {
@@ -43,6 +44,9 @@ export default function ReportsPage() {
     total: 0,
     totalPages: 1,
   });
+
+  const PAGE_SIZE_OPTIONS = [10, 20, 50];
+
 
   const [filters, setFilters] = useState(() => ({
     name: searchParams.get("name") || "",
@@ -160,6 +164,19 @@ export default function ReportsPage() {
     }
   };
 
+  const changePageSize = (newSize) => {
+    const newFilters = {
+      ...filters,
+      size: Number(newSize),
+      page: 1,
+    };
+  
+    setFilters(newFilters);
+    syncUrl(newFilters);
+    fetchReports(newFilters);
+  };
+  
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {animateMode && (
@@ -218,7 +235,7 @@ export default function ReportsPage() {
         </header>
 
         {/* Filters */}
-        <section className="mb-8 flex flex-wrap gap-4">
+        <section className="mb-2 flex flex-wrap gap-4">
           {/* Name Input */}
           <div className="relative flex-1 min-w-[220px] max-w-[480px]">
             <input
@@ -334,6 +351,29 @@ export default function ReportsPage() {
           </div>
         </section>
 
+        <div className="flex justify-end items-center gap-3 my-3">
+  <span className={`${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+    Rows per page:
+  </span>
+
+  <select
+    value={filters.size}
+    onChange={(e) => changePageSize(e.target.value)}
+    className={`p-2 rounded-lg border transition-colors duration-300
+      ${
+        darkMode
+          ? "bg-gray-800 text-gray-100 border-gray-700"
+          : "bg-white text-gray-900 border-gray-400"
+      }`}
+  >
+    {PAGE_SIZE_OPTIONS.map((s) => (
+      <option key={s} value={s}>
+        {s}
+      </option>
+    ))}
+  </select>
+</div>
+
         {/* Reports Layout */}
         {layout === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -375,6 +415,12 @@ export default function ReportsPage() {
                           setEditingName(r.name);
                         }}
                       />
+                      <a href={r.minio_url}>
+                      <FiDownload
+                        className="cursor-pointer text-gray-400 hover:text-green-500"
+                        title="Download report"
+                      />
+                      </a>
                     </div>
                   )}
                 </div>
@@ -453,6 +499,12 @@ export default function ReportsPage() {
                               setEditingName(r.name);
                             }}
                           />
+                      <a href={r.minio_url}>
+                      <FiDownload
+                        className="cursor-pointer text-gray-400 hover:text-green-500"
+                        title="Download report"
+                      />
+                      </a>
                         </div>
                       )}
                     </td>

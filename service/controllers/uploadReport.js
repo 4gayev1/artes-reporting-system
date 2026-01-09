@@ -20,7 +20,7 @@ async function uploadReport(req, res) {
 
     await minioClient.putObject("artes-reports", objectName, reportFile.buffer);
 
-    const minioUrl = `http://${MinioConf.endPoint}:${MinioConf.port}/${"artes-reports"}/${objectName}`;
+    const minioUrl = `${req.protocol}://${req.get("host")}:${MinioConf.port}/${"artes-reports"}/${objectName}`;
 
     const reportUrl = `${req.protocol}://${req.get("host")}/api/preview/${id}`;
 
