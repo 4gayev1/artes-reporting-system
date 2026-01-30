@@ -18,9 +18,11 @@ async function getById(req, res) {
 
     const report = result.rows[0];
 
-    const response = await axios.get(report.minio_url, {
-      responseType: "arraybuffer",
-    });
+    const minio_url = new URL(report.minio_url);
+
+    const response = await axios.get(`${req.protocol}://minio:${minio_url.port}${minio_url.pathname}`,{
+    responseType: "arraybuffer"
+    })
 
     const buffer = Buffer.from(response.data);
     const filename = report.minio_url.split("/").pop().toLowerCase();
