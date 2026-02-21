@@ -396,37 +396,25 @@ cd artes-reporting-system
 ##### Nginx Image
 
 ```bash
-docker buildx build \
-  --platform=linux/amd64,linux/arm64 \
-  -t yourDockerHubUser/artes-nginx \
-  --push .
+docker buildx build --platform=linux/amd64,linux/arm64 -t yourDockerHubUser/artes-nginx --push .
 ```
 
 ##### Database Image
 
 ```bash
-docker buildx build \
-  --platform=linux/amd64,linux/arm64 \
-  -t yourDockerHubUser/artes-db \
-  --push .
+docker buildx build --platform=linux/amd64,linux/arm64 -t yourDockerHubUser/artes-db --push .
 ```
 
 ##### Backend Image
 
 ```bash
-docker buildx build \
-  --platform=linux/amd64,linux/arm64 \
-  -t yourDockerHubUser/artes-report-service \
-  --push .
+docker buildx build --platform=linux/amd64,linux/arm64 -t yourDockerHubUser/artes-report-service --push .
 ```
 
 ##### Frontend Image
 
 ```bash
-docker buildx build \
-  --platform=linux/amd64,linux/arm64 \
-  -t yourDockerHubUser/artes-report-ui \
-  --push .
+docker buildx build --platform=linux/amd64,linux/arm64 -t yourDockerHubUser/artes-report-ui --push .
 ```
 
 > ⚠️ Make sure `docker buildx` is enabled and you are logged in to Docker Hub.
