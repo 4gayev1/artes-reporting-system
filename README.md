@@ -56,7 +56,7 @@ Upload a single `.html` file and view it directly in the browser.
 ### Allure Reports
 
 1. Generate Allure report (`allure generate`)
-2. Zip the generated `allure-report` folder
+2. Zip the generated `allure-report` folder (or use npx artes -r --zip option to auto zip)
 3. Upload the ZIP file via **UI** or **API**
 
 ---
