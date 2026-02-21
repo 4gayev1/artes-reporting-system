@@ -1034,6 +1034,7 @@ export default function ReportsPage() {
                           padding: "3px 10px",
                           borderRadius: 8,
                           fontFamily: "monospace",
+                          textTransform: "uppercase",
                         }}
                       >
                         {r.type}

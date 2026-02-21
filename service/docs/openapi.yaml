@@ -4,7 +4,7 @@ info:
   version: 1.0.0
 servers: []
 paths:
-  /:
+  /api/:
     get:
       summary: Health check
       tags: [Health]
@@ -12,7 +12,7 @@ paths:
         "200":
           description: Service is healthy
 
-  /logo-url:
+  /api/logo-url:
     get:
       summary: Get logo URL
       tags: [Logo]
@@ -20,7 +20,7 @@ paths:
         "200":
           description: Logo URL returned successfully
 
-  /logo:
+  /api/logo:
     get:
       summary: Get logo image
       tags: [Logo]
@@ -46,7 +46,7 @@ paths:
         "200":
           description: Logo uploaded successfully
 
-  /reports:
+  /api/reports:
     get:
       summary: Get all reports
       tags: [Reports]
@@ -79,7 +79,7 @@ paths:
         "200":
           description: All reports deleted
 
-  /preview/{id}:
+  /api/preview/{id}:
     get:
       summary: Preview report by ID
       tags: [Reports]
@@ -96,7 +96,7 @@ paths:
         "404":
           description: Report not found
 
-  /types:
+  /api/types:
     get:
       summary: Get all report types
       tags: [Reports]
@@ -110,7 +110,7 @@ paths:
                 items:
                   type: string
 
-  /projects:
+  /api/projects:
     get:
       summary: Get all projects
       tags: [Reports]
@@ -124,7 +124,7 @@ paths:
                 items:
                   type: string
 
-  /report/{id}:
+  /api/report/{id}:
     patch:
       summary: Change report name
       tags: [Reports]

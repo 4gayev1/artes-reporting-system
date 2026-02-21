@@ -468,7 +468,7 @@ export default function ReportCard({
                   padding: "2px 8px",
                   borderRadius: 6,
                   fontFamily: "monospace",
-                  textTransform: "lowercase",
+                  textTransform: "uppercase",
                 }}
               >
                 {r.type}

@@ -15,23 +15,20 @@ It allows uploading, storing, filtering, and previewing **HTML** and **Allure** 
 
 ---
 
-### List/grid layout
+### Grid/List layout
 
-<img width="1196" height="706" alt="preview1" src="https://github.com/user-attachments/assets/0af3bf2b-2f24-41c4-b05a-9853a16dc4e0" />
+<img width="1913" height="953" alt="preview 1" src="https://github.com/user-attachments/assets/a52e5132-1cb8-4092-af3b-01d64186ffff" />
 
-
-## Reports List
-
-<img width="1200" height="704" alt="preview2" src="https://github.com/user-attachments/assets/a60d0392-f196-499e-b76a-6378308399ad" />
+<img width="1912" height="960" alt="preview 2" src="https://github.com/user-attachments/assets/0a3183c0-2516-43c2-8884-287687a7f16f" />
 
 
 ### Dark/light mode
 
-<img width="1198" height="708" alt="preview4" src="https://github.com/user-attachments/assets/c763de73-d6db-48b8-8f31-62ad0ba1fff9" />
+<img width="1917" height="958" alt="preview 3" src="https://github.com/user-attachments/assets/ede5b7f9-dbb4-40a8-8894-84737b80c082" />
 
 ## Upload Report
 
-<img width="1186" height="700" alt="preview3" src="https://github.com/user-attachments/assets/3e76a339-4301-4782-8ae6-142709596367" />
+<img width="1916" height="834" alt="pewview 4" src="https://github.com/user-attachments/assets/8633a6a9-ddc0-49f0-9296-08016f4dfe44" />
 
 ## Report Preview
 
