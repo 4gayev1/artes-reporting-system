@@ -1,0 +1,165 @@
+openapi: "3.0.0"
+info:
+  title: Artes Reports API
+  version: 1.0.0
+servers: []
+paths:
+  /:
+    get:
+      summary: Health check
+      tags: [Health]
+      responses:
+        "200":
+          description: Service is healthy
+
+  /logo-url:
+    get:
+      summary: Get logo URL
+      tags: [Logo]
+      responses:
+        "200":
+          description: Logo URL returned successfully
+
+  /logo:
+    get:
+      summary: Get logo image
+      tags: [Logo]
+      responses:
+        "200":
+          description: Logo image file
+        "404":
+          description: Logo not found
+    post:
+      summary: Upload a logo
+      tags: [Logo]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Logo uploaded successfully
+
+  /reports:
+    get:
+      summary: Get all reports
+      tags: [Reports]
+      responses:
+        "200":
+          description: List of all reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    project:
+                      type: string
+                    minio_url:
+                      type: string
+                    report_url:
+                      type: string
+    delete:
+      summary: Delete all reports
+      tags: [Reports]
+      responses:
+        "200":
+          description: All reports deleted
+
+  /preview/{id}:
+    get:
+      summary: Preview report by ID
+      tags: [Reports]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Report UUID
+      responses:
+        "302":
+          description: Redirects to the report index.html
+        "404":
+          description: Report not found
+
+  /types:
+    get:
+      summary: Get all report types
+      tags: [Reports]
+      responses:
+        "200":
+          description: List of report types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /projects:
+    get:
+      summary: Get all projects
+      tags: [Reports]
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /report/{id}:
+    patch:
+      summary: Change report name
+      tags: [Reports]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Report name updated
+        "404":
+          description: Report not found
+
+    delete:
+      summary: Delete report by ID
+      tags: [Reports]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Report deleted
+        "404":
+          description: Report not found

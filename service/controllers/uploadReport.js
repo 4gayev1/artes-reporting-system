@@ -18,18 +18,20 @@ function extractStatusFromZip(buffer) {
   const entries = zip.getEntries();
 
   const prometheusEntry = entries.find((e) =>
-    e.entryName.match(/[^/]+\/export\/prometheusData\.txt$/)
+    e.entryName.match(/([^/]+\/)?export\/prometheusData\.txt$/),
   );
 
   const executorEntry = entries.find((e) =>
-    e.entryName.match(/[^/]+\/widgets\/executors\.json$/)
+    e.entryName.match(/([^/]+\/)?widgets\/executors\.json$/),
   );
 
   let statusFields = null;
   let executor = null;
 
   if (prometheusEntry) {
-    statusFields = parsePrometheusData(prometheusEntry.getData().toString("utf8"));
+    statusFields = parsePrometheusData(
+      prometheusEntry.getData().toString("utf8"),
+    );
   }
 
   if (executorEntry) {
@@ -37,8 +39,8 @@ function extractStatusFromZip(buffer) {
       const json = JSON.parse(executorEntry.getData().toString("utf8"));
       const first = Array.isArray(json) ? json[0] : json;
       executor = {
-        buildName:  first.buildName  ?? null,
-        buildUrl:   first.buildUrl   ?? null,
+        buildName: first.buildName ?? null,
+        buildUrl: first.buildUrl ?? null,
         buildOrder: first.buildOrder ?? null,
       };
     } catch {
@@ -49,13 +51,38 @@ function extractStatusFromZip(buffer) {
   return { statusFields, executor };
 }
 
+function normalizeZipBuffer(buffer) {
+  const zip = new AdmZip(buffer);
+  const entries = zip.getEntries();
+
+  const roots = new Set(entries.map((e) => e.entryName.split("/")[0]));
+
+  const hasSingleRoot =
+    roots.size === 1 && entries.some((e) => e.entryName.includes("/"));
+
+  if (!hasSingleRoot) return buffer;
+
+  const newZip = new AdmZip();
+  for (const entry of entries) {
+    const strippedPath = entry.entryName.split("/").slice(1).join("/");
+    if (!strippedPath || entry.isDirectory) continue;
+    newZip.addFile(strippedPath, entry.getData());
+  }
+
+  return newZip.toBuffer();
+}
+
 async function uploadReport(req, res) {
   try {
     const {
-      type, name, project,
-
-      failed, broken, passed, skipped, unknown,
-
+      type,
+      name,
+      project,
+      failed,
+      broken,
+      passed,
+      skipped,
+      unknown,
       pipeline_status,
       pipeline_url,
       pipeline_name,
@@ -64,57 +91,48 @@ async function uploadReport(req, res) {
 
     const reportFile = req.file;
 
-    if (!name)       return res.status(400).json({ error: "name is required" });
+    if (!name) return res.status(400).json({ error: "name is required" });
     if (!reportFile) return res.status(400).json({ error: "file is required" });
 
     const extension = reportFile.originalname.split(".").pop();
-    const id   = uuidv4();
+    const id = uuidv4();
     const date = new Date().toISOString();
-    const t    = type    || "unknown";
+    const t = type || "unknown";
     const proj = project || "unknown";
 
-
     let statusFields = {
-      failed:  Number(failed)  || 0,
-      broken:  Number(broken)  || 0,
-      passed:  Number(passed)  || 0,
+      failed: Number(failed) || 0,
+      broken: Number(broken) || 0,
+      passed: Number(passed) || 0,
       skipped: Number(skipped) || 0,
       unknown: Number(unknown) || 0,
     };
 
     let executor = {
-      buildName:  pipeline_name         ?? null,
-      buildUrl:   pipeline_url          ?? null,
-      buildOrder: pipeline_build_order  ?? null,
+      buildName: pipeline_name ?? null,
+      buildUrl: pipeline_url ?? null,
+      buildOrder: pipeline_build_order ?? null,
     };
-
 
     if (extension === "zip") {
       const extracted = extractStatusFromZip(reportFile.buffer);
+      if (extracted.statusFields) statusFields = extracted.statusFields;
+      if (extracted.executor) executor = extracted.executor;
 
-      if (extracted.statusFields) {
-        statusFields = extracted.statusFields;
-      }
-
-      if (extracted.executor) {
-        executor = extracted.executor;
-      }
+      reportFile.buffer = normalizeZipBuffer(reportFile.buffer);
     }
-
 
     const objectName = `${t}/${proj}/${name}-${date}.${extension}`;
     await minioClient.putObject("artes-reports", objectName, reportFile.buffer);
 
-    const minioUrl  = `${req.protocol}://${req.get("host")}:${MinioConf.port}/artes-reports/${objectName}`;
+    const minioUrl = `${req.protocol}://${req.get("host")}:${MinioConf.port}/artes-reports/${objectName}`;
     const reportUrl = `${req.protocol}://${req.get("host")}/api/preview/${id}`;
-
 
     const reportResult = await pool.query(
       `INSERT INTO reports (id, type, name, minio_url, report_url, project)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
-      [id, t, name, minioUrl, reportUrl, proj]
+      [id, t, name, minioUrl, reportUrl, proj],
     );
-
 
     const statusResult = await pool.query(
       `INSERT INTO status
@@ -132,13 +150,13 @@ async function uploadReport(req, res) {
         executor.buildUrl,
         executor.buildName,
         executor.buildOrder,
-      ]
+      ],
     );
 
     res.json({
       message: "Report uploaded successfully",
-      report:  reportResult.rows[0],
-      status:  statusResult.rows[0],
+      report: reportResult.rows[0],
+      status: statusResult.rows[0],
     });
   } catch (err) {
     console.error(err);
