@@ -7,12 +7,6 @@ const reportsRouter = require("./routes/reports");
 const swaggerSpec = require("./docs/swagger.json");
 const { apiReference } = require("@scalar/express-api-reference");
 
-const getBaseUrl = (req) => {
-  const protocol = req.headers["x-forwarded-proto"] || req.protocol;
-  const host = req.headers["x-forwarded-host"] || req.get("host");
-  return `${protocol}://${host}`;
-};
-
 const app = express();
 app.set("trust proxy", true);
 app.use(cors());
@@ -25,7 +19,7 @@ app.get("/swagger.json", (req, res) => {
     ...swaggerSpec,
     servers: [
       {
-        url: getBaseUrl(req), 
+        url: `${req.protocol}://${req.get("host")}`, 
         description: "Dynamic server",
       },
     ],
@@ -36,9 +30,9 @@ app.get("/swagger.json", (req, res) => {
 });
 
 app.use(
-  "/api/docs",
+  "/docs",
   apiReference({
-    spec: { url: "/swagger.json" },
+    spec: { url: "/api/swagger.json" },
     theme: "bluePlanet",
   })
 );
