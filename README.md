@@ -15,21 +15,22 @@ It allows uploading, storing, filtering, and previewing **HTML** and **Allure** 
 
 ---
 
-## Reports List
-
-<img width="1502" height="802" alt="Screenshot 2026-01-09 at 12 48 18" src="https://github.com/user-attachments/assets/d03abd29-4ae2-44b3-9441-0aebabb4547d" />
-
 ### List/grid layout
 
-<img width="1503" height="799" alt="Screenshot 2026-01-09 at 12 48 28" src="https://github.com/user-attachments/assets/bb0a5b83-5451-4fd7-9c21-9d3f4d578b6b" />
+<img width="1200" height="704" alt="preview2" src="https://github.com/user-attachments/assets/a60d0392-f196-499e-b76a-6378308399ad" />
+
+## Reports List
+
+<img width="1196" height="706" alt="preview1" src="https://github.com/user-attachments/assets/0af3bf2b-2f24-41c4-b05a-9853a16dc4e0" />
+
 
 ### Dark/light mode
 
-<img width="1501" height="797" alt="image" src="https://github.com/user-attachments/assets/0a25d49a-2953-4c5a-8e24-5e78bb61517d" />
+<img width="1198" height="708" alt="preview4" src="https://github.com/user-attachments/assets/c763de73-d6db-48b8-8f31-62ad0ba1fff9" />
 
 ## Upload Report
 
-<img width="1501" height="806" alt="image" src="https://github.com/user-attachments/assets/9eb603b7-4395-4090-9356-059bebbc4133" />
+<img width="1186" height="700" alt="preview3" src="https://github.com/user-attachments/assets/3e76a339-4301-4782-8ae6-142709596367" />
 
 ## Report Preview
 
@@ -91,6 +92,19 @@ CREATE TABLE IF NOT EXISTS reports (
   project VARCHAR(100) DEFAULT 'other',
   upload_date TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS status (
+  id UUID PRIMARY KEY REFERENCES reports(id) ON DELETE CASCADE,
+  failed          INTEGER DEFAULT 0,
+  broken          INTEGER DEFAULT 0,
+  passed          INTEGER DEFAULT 0,
+  skipped         INTEGER DEFAULT 0,
+  unknown         INTEGER DEFAULT 0,
+  pipeline_status INTEGER DEFAULT 0,
+  pipeline_url         VARCHAR(255),
+  pipeline_name        VARCHAR(100),
+  pipeline_build_order INTEGER
+);
 ```
 
 ### PostgreSQL Login
@@ -107,6 +121,14 @@ psql -h localhost -p 5432 -U artes -d artes_reports
 
 ```http
 GET /
+```
+
+---
+
+### API documentation
+
+```http
+GET /docs
 ```
 
 ---
@@ -162,12 +184,22 @@ POST /report
 
 **Content-Type:** `multipart/form-data`
 
-| Field   | Required | Description        |
-| ------- | -------- | ------------------ |
-| name    | ✅       | Report name        |
-| type    | ❌       | Default: `unknown` |
-| project | ❌       | Default: `unknown` |
-| file    | ✅       | HTML file or ZIP   |
+| Field                | Required  | Description                                                                   |
+| -------------------- | --------  | ----------------------------------------------------------------------------- |
+| name                 | ✅        | Report name                                                                   |
+| file                 | ✅        | HTML file or ZIP                                                              |
+| type                 | ❌        | Report type (`ui`, `api`, etc.), default: `unknown`                           |
+| project              | ❌        | Project name, default: `unknown`                                              |
+| failed               | ❌        | Number of failed tests (optional; overridden if ZIP contains prometheusData)  |
+| broken               | ❌        | Number of broken tests (optional; overridden if ZIP contains prometheusData)  |
+| passed               | ❌        | Number of passed tests (optional; overridden if ZIP contains prometheusData)  |
+| skipped              | ❌        | Number of skipped tests (optional; overridden if ZIP contains prometheusData) |
+| unknown              | ❌        | Number of unknown tests (optional; overridden if ZIP contains prometheusData) |
+| pipeline_status      | ❌        | Status of the pipeline (e.g., success, failed, running)                       |
+| pipeline_url         | ❌        | URL to the pipeline/build                                                     |
+| pipeline_name        | ❌        | Name of the pipeline or build                                                 |
+| pipeline_build_order | ❌        | Numeric order of the build in the pipeline                                    |
+
 
 ---
 
