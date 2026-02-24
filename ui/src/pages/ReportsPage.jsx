@@ -963,9 +963,22 @@ export default function ReportsPage() {
                             />
                             <span
                               onClick={() => {
-                                navigator.clipboard.writeText(
-                                  r.report || r.report_url,
-                                );
+                                const text = r.report || r.report_url;
+                                
+                                if (navigator.clipboard && navigator.clipboard.writeText) {
+                                  navigator.clipboard.writeText(text);
+                                } else {
+                                  const textarea = document.createElement("textarea");
+                                  textarea.value = text;
+                                  textarea.style.position = "fixed";
+                                  textarea.style.opacity = "0";
+                                  document.body.appendChild(textarea);
+                                  textarea.focus();
+                                  textarea.select();
+                                  document.execCommand("copy");
+                                  document.body.removeChild(textarea);
+                                }
+                                
                                 setCopiedId(r.id);
                                 setTimeout(() => setCopiedId(null), 1500);
                               }}
