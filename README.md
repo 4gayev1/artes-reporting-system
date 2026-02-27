@@ -32,7 +32,7 @@ It allows uploading, storing, filtering, and previewing **HTML** and **Allure** 
 
 ## Report Preview
 
-<img width="1512" height="826" alt="image" src="https://github.com/user-attachments/assets/4469010c-721f-4a2a-9a23-0118fd71d781" />
+<img width="1510" height="822" alt="preview 4" src="https://github.com/user-attachments/assets/93fc8698-ecd8-4356-b0ac-b51fa1ee9de8" />
 
 ---
 
