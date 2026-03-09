@@ -558,13 +558,12 @@ function StatusCell({ status }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 200 }}>
-      {/* Thicker segmented bar with inline percentages */}
       <div style={{ height: 14, borderRadius: 99, overflow: "hidden", background: "#1e293b", display: "flex" }}>
         {Object.entries(SP).map(([k, color]) => {
           const val = data[k];
           if (val === 0) return null;
           const pct = Math.round((val / total) * 100);
-          const showLabel = pct >= 10; // only show text if segment is wide enough
+          const showLabel = pct >= 10;
           return (
             <div key={k}
               onMouseEnter={() => setHov(k)}
@@ -603,7 +602,6 @@ function StatusCell({ status }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4, justifyContent: "center" }}>
         {Object.entries(SP).map(([k, color]) => {
           const val = data[k];
-          const pct = Math.round((val / total) * 100);
           return (
             <span key={k}
               onMouseEnter={() => setHov(k)}
@@ -622,7 +620,6 @@ function StatusCell({ status }) {
             >
               <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0 }} />
               {val}
-              <span style={{ opacity: 0.7, fontSize: 12 }}>{pct}%</span>
             </span>
           );
         })}
