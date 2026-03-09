@@ -17,18 +17,17 @@ It allows uploading, storing, filtering, and previewing **HTML** and **Allure** 
 
 ### Grid/List layout
 
-<img width="1913" height="953" alt="preview 1" src="https://github.com/user-attachments/assets/a52e5132-1cb8-4092-af3b-01d64186ffff" />
+<img width="1919" height="957" alt="preview 1" src="https://github.com/user-attachments/assets/1d49608a-34a9-41b4-aea2-5a3a47d0d09e" />
 
-<img width="1912" height="960" alt="preview 2" src="https://github.com/user-attachments/assets/0a3183c0-2516-43c2-8884-287687a7f16f" />
-
+<img width="1909" height="957" alt="preview 2" src="https://github.com/user-attachments/assets/1b1b6673-dd2a-460e-abd4-8725593e75af" />
 
 ### Dark/light mode
 
-<img width="1917" height="958" alt="preview 3" src="https://github.com/user-attachments/assets/ede5b7f9-dbb4-40a8-8894-84737b80c082" />
+<img width="1917" height="957" alt="preview 3" src="https://github.com/user-attachments/assets/114d75e0-9839-45a0-a704-f7f10169f4be" />
 
 ## Upload Report
 
-<img width="1916" height="834" alt="pewview 4" src="https://github.com/user-attachments/assets/8633a6a9-ddc0-49f0-9296-08016f4dfe44" />
+<img width="1919" height="955" alt="preview 4" src="https://github.com/user-attachments/assets/a2098afb-306b-4f55-8937-1bddb2ecaa18" />
 
 ## Report Preview
 
@@ -41,7 +40,7 @@ It allows uploading, storing, filtering, and previewing **HTML** and **Allure** 
 - 📄 Upload and preview **HTML reports**
 - 📦 Upload **Allure reports** as ZIP files
 - 🌐 Browser-based report preview
-- 🔍 Filter reports by project, name, type, and date
+- 🔍 Advanced filtering
 - 🗑️ Delete single or multiple reports
 - 🐳 Fully Dockerized (Backend, UI, DB, Storage)
 
