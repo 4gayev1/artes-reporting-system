@@ -2,7 +2,18 @@ const pool = require("../db/db");
 
 async function getAll(req, res) {
   try {
-    const { project, name, type, date, fromDate, toDate } = req.query;
+    const {
+      project,
+      name,
+      type,
+      date,
+      fromDate,
+      toDate,
+      browser,
+      os,
+      executor,
+      environment,
+    } = req.query;
 
     const page = Number(req.query.page) || 1;
     const size = Number(req.query.size) || 10;
@@ -46,6 +57,26 @@ async function getAll(req, res) {
       values.push(toDate);
     }
 
+    if (browser) {
+      baseQuery += ` AND r.browser_name = $${i++}`;
+      values.push(browser);
+    }
+
+    if (os) {
+      baseQuery += ` AND r.os_name = $${i++}`;
+      values.push(os);
+    }
+
+    if (executor) {
+      baseQuery += ` AND r.executor = $${i++}`;
+      values.push(executor);
+    }
+
+    if (environment) {
+      baseQuery += ` AND r.environment = $${i++}`;
+      values.push(environment);
+    }
+
     const count = await pool.query(`SELECT COUNT(*) ${baseQuery}`, values);
     const total = Number(count.rows[0].count);
 
@@ -77,6 +108,10 @@ async function getAll(req, res) {
       upload_date: row.upload_date,
       report: row.report_url,
       minio: row.minio_url,
+      os_name: row.os_name,
+      browser_name: row.browser_name,
+      environment: row.environment,
+      executor: row.executor,
       status: {
         failed: row.failed,
         broken: row.broken,
@@ -103,4 +138,52 @@ async function getAll(req, res) {
   }
 }
 
-module.exports = { getAll };
+async function getBrowsers(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT DISTINCT browser_name FROM reports WHERE browser_name IS NOT NULL ORDER BY browser_name`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
+  }
+}
+
+async function getOS(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT DISTINCT os_name FROM reports WHERE os_name IS NOT NULL ORDER BY os_name`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
+  }
+}
+
+async function getExecutors(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT DISTINCT executor FROM reports WHERE executor IS NOT NULL ORDER BY executor`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
+  }
+}
+
+async function getEnvironments(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT DISTINCT environment FROM reports WHERE environment IS NOT NULL ORDER BY environment`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
+  }
+}
+
+module.exports = { getAll, getBrowsers, getOS, getExecutors, getEnvironments };

@@ -1,14 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { addReport } from "../api";
-import { FiX, FiUpload, FiLink, FiHash, FiUser, FiChevronDown, FiFolder, FiTag } from "react-icons/fi";
+import { FiX, FiUpload, FiChevronDown, FiFolder, FiTag } from "react-icons/fi";
 
-const COUNT_FIELDS = [
-  { key: "passed", label: "Passed", color: "#22c55e" },
-  { key: "failed", label: "Failed", color: "#ef4444" },
-  { key: "broken", label: "Broken", color: "#f97316" },
-  { key: "skipped", label: "Skipped", color: "#a78bfa" },
-  { key: "unknown", label: "Unknown", color: "#64748b" },
-];
 
 function ComboSelect({ value, onChange, options, placeholder, icon: Icon, dark, inputBg, inputBdr, txt, mute, bdr }) {
   const [open, setOpen] = useState(false);
@@ -214,18 +207,6 @@ export default function AddReportModal({ onClose, onAdd, projects, types, darkMo
   const projectOptions = projects.map((p) => Object.values(p)[0]);
   const typeOptions = types.map((t) => Object.values(t)[0]);
 
-  function SectionLabel({ children }) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "6px 0 2px" }}>
-        <div style={{ flex: 1, height: 1, background: bdr }} />
-        <span style={{ fontSize: 11, fontWeight: 700, color: mute, textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap" }}>
-          {children}
-        </span>
-        <div style={{ flex: 1, height: 1, background: bdr }} />
-      </div>
-    );
-  }
-
   function FieldLabel({ children }) {
     return (
       <label style={{ fontSize: 12, fontWeight: 600, color: sub, textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -266,7 +247,6 @@ export default function AddReportModal({ onClose, onAdd, projects, types, darkMo
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: `1px solid ${bdr}`, background: hBg, borderRadius: "20px 20px 0 0" }}>
             <div>
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: txt }}>Add New Report</h2>
-              <p style={{ margin: "3px 0 0", fontSize: 13, color: mute }}>ZIP files auto-extract test data — manual fields are optional fallbacks</p>
             </div>
             <button onClick={onClose} disabled={loading} style={{ background: "none", border: `1px solid ${bdr}`, borderRadius: 8, cursor: "pointer", color: mute, padding: 6, display: "flex", transition: "background .15s, color .15s" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = bdr; e.currentTarget.style.color = txt; }}
@@ -277,7 +257,6 @@ export default function AddReportModal({ onClose, onAdd, projects, types, darkMo
 
           {/* Form */}
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12, padding: "20px 24px 24px" }}>
-            <SectionLabel>Report Info</SectionLabel>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
               <FieldLabel>Report Name *</FieldLabel>
@@ -324,61 +303,6 @@ export default function AddReportModal({ onClose, onAdd, projects, types, darkMo
               </label>
             </div>
 
-            {/* Pipeline */}
-            <SectionLabel>Pipeline (optional)</SectionLabel>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <FieldLabel>CI / CD Name</FieldLabel>
-                <div style={{ position: "relative" }}>
-                  <FiUser size={14} color={mute} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
-                  <input className="rp-input" style={{ ...baseInput, paddingLeft: 34 }} type="text" value={pipelineName} placeholder="e.g. GitLab CI" onChange={(e) => setPipelineName(e.target.value)} disabled={loading} />
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <FieldLabel>Pipeline Status</FieldLabel>
-                <div style={{ display: "flex", gap: 6, height: 41 }}>
-                  {[{ val: "0", label: "✓ Success", color: "#22c55e" }, { val: "1", label: "✗ Failed", color: "#ef4444" }].map((opt) => (
-                    <button key={opt.val} type="button" onClick={() => setPipelineStatus((p) => (p === opt.val ? "" : opt.val))}
-                      style={{ flex: 1, borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: "pointer", border: "1px solid", borderColor: pipelineStatus === opt.val ? opt.color : inputBdr, background: pipelineStatus === opt.val ? `${opt.color}22` : inputB, color: pipelineStatus === opt.val ? opt.color : mute, transition: "all .15s", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "end" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <FieldLabel>Pipeline URL</FieldLabel>
-                <div style={{ position: "relative" }}>
-                  <FiLink size={14} color={mute} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
-                  <input className="rp-input" style={{ ...baseInput, paddingLeft: 34 }} type="text" value={pipelineUrl} placeholder="https://ci.example.com/jobs/123" onChange={(e) => setPipelineUrl(e.target.value)} disabled={loading} />
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 90 }}>
-                <FieldLabel>Build #</FieldLabel>
-                <div style={{ position: "relative" }}>
-                  <FiHash size={14} color={mute} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
-                  <input className="rp-input" style={{ ...baseInput, paddingLeft: 30 }} type="number" min="1" value={pipelineOrder} placeholder="42" onChange={(e) => setPipelineOrder(e.target.value)} disabled={loading} />
-                </div>
-              </div>
-            </div>
-
-            {/* Test Counts */}
-            <SectionLabel>Test Counts (optional — auto from ZIP)</SectionLabel>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8 }}>
-              {COUNT_FIELDS.map(({ key, label, color }) => (
-                <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.04em", textAlign: "center" }}>{label}</label>
-                  <input className="count-input" type="number" min="0" value={counts[key]} placeholder="0" disabled={loading}
-                    onChange={(e) => setCounts((prev) => ({ ...prev, [key]: e.target.value }))}
-                    style={{ "--status-color": color, "--focus-glow": `${color}30`, width: "100%", padding: "10px 6px", background: inputB, border: `1px solid ${counts[key] ? color : inputBdr}`, borderRadius: 10, color: counts[key] ? color : mute, fontSize: 16, fontWeight: 700, outline: "none", textAlign: "center", fontFamily: "monospace", transition: "border-color .2s, color .2s, box-shadow .2s", boxSizing: "border-box" }}
-                  />
-                </div>
-              ))}
-            </div>
 
             {/* Actions */}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 6 }}>

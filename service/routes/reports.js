@@ -8,6 +8,10 @@ const { getLogoURL } = require("../controllers/getLogoURL");
 const { getLogo } = require("../controllers/getLogo");
 const { getTypes } = require("../controllers/getTypes");
 const { getProjects } = require("../controllers/getProjects");
+const { getBrowsers } = require("../controllers/getBrowsers");
+const { getOS } = require("../controllers/getOS");
+const { getExecutors } = require("../controllers/getExecutor");
+const { getEnvironments } = require("../controllers/getEnvironment");
 
 const { uploadLogo } = require("../controllers/uploadLogo");
 const { uploadReport } = require("../controllers/uploadReport");
@@ -28,6 +32,10 @@ router.get("/reports", getAll);
 router.get("/preview/:id", getById);
 router.get("/types", getTypes);
 router.get("/projects", getProjects);
+router.get("/browsers", getBrowsers);
+router.get("/os", getOS);
+router.get("/executors", getExecutors);
+router.get("/environments", getEnvironments);
 
 router.post("/report", upload.single("file"), uploadReport);
 router.post("/logo", upload.single("file"), uploadLogo);

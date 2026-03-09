@@ -7,7 +7,11 @@ CREATE TABLE IF NOT EXISTS reports (
   minio_url TEXT NOT NULL,
   report_url TEXT NOT NULL,
   project VARCHAR(100) DEFAULT 'other',
-  upload_date TIMESTAMP DEFAULT NOW()
+  upload_date TIMESTAMP DEFAULT NOW(),
+  os_name VARCHAR(50),
+  browser_name VARCHAR(50),
+  environment VARCHAR(50),
+  executor VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS status (

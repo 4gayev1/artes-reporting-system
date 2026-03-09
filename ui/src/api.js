@@ -9,6 +9,10 @@ export const getReports = (filters) => api.get("/reports", { params: filters });
 export const getReportById = (id) => api.get(`/preview/${id}`);
 export const getProjects = () => api.get("/projects");
 export const getTypes = () => api.get("/types");
+export const getBrowsers = () => api.get("/browsers");
+export const getOS = () => api.get("/os");
+export const getExecutors = () => api.get("/executors");
+export const getEnvironments = () => api.get("/environments");
 
 export const patchName = (id, data) => api.patch(`/report/${id}`, data);
 
@@ -24,4 +28,5 @@ export const uploadLogo = (data) =>
 export const deleteReportById = (id) => api.delete(`/report/${id}`);
 export const deleteFilteredReports = (filters) =>
   api.delete("/reports", { params: filters });
+
 export default api;

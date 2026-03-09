@@ -13,24 +13,34 @@ function parsePrometheusData(content) {
   return result;
 }
 
+function extractEnvValue(envArray, key) {
+  const entry = envArray.find((e) => e.name === key);
+  return entry?.values?.[0] ?? null;
+}
+
 function extractStatusFromZip(buffer) {
   const zip = new AdmZip(buffer);
   const entries = zip.getEntries();
 
   const prometheusEntry = entries.find((e) =>
-    e.entryName.match(/([^/]+\/)?export\/prometheusData\.txt$/),
+    e.entryName.match(/([^/]+\/)?export\/prometheusData\.txt$/)
   );
 
   const executorEntry = entries.find((e) =>
-    e.entryName.match(/([^/]+\/)?widgets\/executors\.json$/),
+    e.entryName.match(/([^/]+\/)?widgets\/executors\.json$/)
+  );
+
+  const environmentEntry = entries.find((e) =>
+    e.entryName.match(/([^/]+\/)?widgets\/environment\.json$/)
   );
 
   let statusFields = null;
   let executor = null;
+  let environment = null;
 
   if (prometheusEntry) {
     statusFields = parsePrometheusData(
-      prometheusEntry.getData().toString("utf8"),
+      prometheusEntry.getData().toString("utf8")
     );
   }
 
@@ -42,13 +52,27 @@ function extractStatusFromZip(buffer) {
         buildName: first.buildName ?? null,
         buildUrl: first.buildUrl ?? null,
         buildOrder: first.buildOrder ?? null,
+        type: first.type ?? null,
       };
     } catch {
       executor = null;
     }
   }
 
-  return { statusFields, executor };
+  if (environmentEntry) {
+    try {
+      const json = JSON.parse(environmentEntry.getData().toString("utf8"));
+      environment = {
+        os_name: extractEnvValue(json, "OS_Name"),
+        browser_name: extractEnvValue(json, "Browser_Name"),
+        environment: extractEnvValue(json, "Environment"),
+      };
+    } catch {
+      environment = null;
+    }
+  }
+
+  return { statusFields, executor, environment };
 }
 
 function normalizeZipBuffer(buffer) {
@@ -112,12 +136,20 @@ async function uploadReport(req, res) {
       buildName: pipeline_name ?? null,
       buildUrl: pipeline_url ?? null,
       buildOrder: pipeline_build_order ?? null,
+      type: null,
+    };
+
+    let environment = {
+      os_name: null,
+      browser_name: null,
+      environment: null,
     };
 
     if (extension === "zip") {
       const extracted = extractStatusFromZip(reportFile.buffer);
       if (extracted.statusFields) statusFields = extracted.statusFields;
       if (extracted.executor) executor = extracted.executor;
+      if (extracted.environment) environment = extracted.environment;
 
       reportFile.buffer = normalizeZipBuffer(reportFile.buffer);
     }
@@ -129,9 +161,9 @@ async function uploadReport(req, res) {
     const reportUrl = `${req.protocol}://${req.get("host")}/api/preview/${id}`;
 
     const reportResult = await pool.query(
-      `INSERT INTO reports (id, type, name, minio_url, report_url, project)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
-      [id, t, name, minioUrl, reportUrl, proj],
+      `INSERT INTO reports (id, type, name, minio_url, report_url, project, os_name, browser_name, environment, executor)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;`,
+      [id, t, name, minioUrl, reportUrl, proj, environment.os_name, environment.browser_name, environment.environment, executor.type]
     );
 
     const statusResult = await pool.query(
@@ -150,7 +182,7 @@ async function uploadReport(req, res) {
         executor.buildUrl,
         executor.buildName,
         executor.buildOrder,
-      ],
+      ]
     );
 
     res.json({

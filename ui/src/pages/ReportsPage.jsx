@@ -5,11 +5,15 @@ import {
   getTypes,
   getLogoURL,
   patchName,
+  getBrowsers,
+  getOS,
+  getExecutors,
+  getEnvironments,
 } from "../api";
-import dayjs from "dayjs";
 import { useSearchParams } from "react-router-dom";
 import AddReportModal from "../components/AddReportModal";
 import ReportCard from "../components/ReportCard";
+import ReportsTable from "../components/ReportsTable";
 import {
   FiX,
   FiCalendar,
@@ -19,148 +23,13 @@ import {
   FiSun,
   FiGrid,
   FiList,
-  FiEdit,
-  FiDownload,
-  FiExternalLink,
   FiChevronDown,
-  FiCopy,
+  FiSliders,
+  FiMonitor,
+  FiGlobe,
+  FiServer,
 } from "react-icons/fi";
 
-const SP = {
-  passed: "#22c55e",
-  failed: "#ef4444",
-  broken: "#f97316",
-  skipped: "#a78bfa",
-  unknown: "#64748b",
-};
-
-// pipeline_status: 0 = success, 1 = failed
-function PipelineCell({ status, dark }) {
-  if (!status?.pipeline_url && !status?.pipeline_name)
-    return (
-      <span style={{ color: dark ? "#475569" : "#94a3b8", fontSize: 14 }}>
-        —
-      </span>
-    );
-  const ps = status.pipeline_status;
-  const sc = ps === 0 ? "#22c55e" : ps === 1 ? "#ef4444" : "#64748b";
-  const label = ps === 0 ? "passed" : ps === 1 ? "failed" : "unknown";
-  const bn = status.pipeline_build_order
-    ? `#${status.pipeline_build_order}`
-    : null;
-  return (
-    <a
-      href={status.pipeline_url || "#"}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 6,
-        padding: "5px 12px",
-        borderRadius: 99,
-        textDecoration: "none",
-        background: `${sc}18`,
-        border: `1px solid ${sc}45`,
-        transition: "background 0.2s, transform 0.15s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = `${sc}30`;
-        e.currentTarget.style.transform = "translateY(-1px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = `${sc}18`;
-        e.currentTarget.style.transform = "";
-      }}
-    >
-      <span
-        style={{
-          width: 7,
-          height: 7,
-          borderRadius: "50%",
-          background: sc,
-          boxShadow: `0 0 6px ${sc}`,
-        }}
-      />
-      <span
-        style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: dark ? "#cbd5e1" : "#334155",
-          maxWidth: 120,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {status.pipeline_name || "Pipeline"}
-      </span>
-      {bn && (
-        <span
-          style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: sc,
-            fontFamily: "monospace",
-          }}
-        >
-          {bn}
-        </span>
-      )}
-      <span
-        style={{
-          fontSize: 11,
-          fontWeight: 700,
-          color: sc,
-          textTransform: "uppercase",
-          fontFamily: "monospace",
-          letterSpacing: "0.04em",
-        }}
-      >
-        {label}
-      </span>
-      <FiExternalLink size={11} color={sc} />
-    </a>
-  );
-}
-
-function StatusCell({ status }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        gap: 5,
-        flexWrap: "wrap",
-        justifyContent: "center",
-      }}
-    >
-      {Object.entries(SP).map(([k, color]) => {
-        const val = status?.[k] ?? 0;
-        return (
-          <span
-            key={k}
-            title={k}
-            style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color,
-              background: `${color}18`,
-              border: `1px solid ${color}35`,
-              borderRadius: 99,
-              padding: "2px 9px",
-              fontFamily: "monospace",
-              opacity: val === 0 ? 0.3 : 1,
-            }}
-          >
-            {val}
-          </span>
-        );
-      })}
-    </div>
-  );
-}
-
-// ── Custom Select ─────────────────────────────────────────────────────────────
 function CustomSelect({
   value,
   onChange,
@@ -327,7 +196,7 @@ function CustomSelect({
   );
 }
 
-function DateInput({ value, onChange, placeholder, dark }) {
+function DateInput({ value, onChange, onClear, placeholder, dark }) {
   const bg = dark ? "#0d1930" : "#ffffff";
   const bdr = dark ? "#1a2e4a" : "#d1d5db";
   const txt = dark ? "#f1f5f9" : "#0f172a";
@@ -353,7 +222,7 @@ function DateInput({ value, onChange, placeholder, dark }) {
         onChange={(e) => onChange(e.target.value)}
         style={{
           width: "100%",
-          padding: "11px 14px 11px 38px",
+          padding: value ? "11px 36px 11px 38px" : "11px 14px 11px 38px",
           background: bg,
           border: `1.5px solid ${value ? acc : bdr}`,
           borderRadius: 12,
@@ -377,6 +246,21 @@ function DateInput({ value, onChange, placeholder, dark }) {
           }
         }}
       />
+      {value && (
+        <FiX
+          size={14}
+          color={sub}
+          style={{
+            position: "absolute",
+            right: 11,
+            top: "50%",
+            transform: "translateY(-50%)",
+            cursor: "pointer",
+            zIndex: 2,
+          }}
+          onClick={() => onClear()}
+        />
+      )}
     </div>
   );
 }
@@ -388,12 +272,17 @@ export default function ReportsPage() {
   const [reports, setReports] = useState([]);
   const [projects, setProjects] = useState([]);
   const [types, setTypes] = useState([]);
+  const [browsers, setBrowsers] = useState([]);
+  const [osList, setOsList] = useState([]);
+  const [executors, setExecutors] = useState([]);
+  const [environments, setEnvironments] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [animateMode, setAnimateMode] = useState(false);
   const [layout, setLayout] = useState("grid");
   const [editingReportId, setEditingReportId] = useState(null);
   const [editingName, setEditingName] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     size: 20,
@@ -409,21 +298,37 @@ export default function ReportsPage() {
     type: searchParams.get("type") || "",
     fromDate: searchParams.get("fromDate") || "",
     toDate: searchParams.get("toDate") || "",
+    browser: searchParams.get("browser") || "",
+    os: searchParams.get("os") || "",
+    executor: searchParams.get("executor") || "",
+    environment: searchParams.get("environment") || "",
     page: Number(searchParams.get("page")) || 1,
     size: Number(searchParams.get("size")) || 20,
   }));
   const [debouncedName, setDebouncedName] = useState(filters.name);
 
+  const hasAdvancedFilters =
+    filters.browser || filters.os || filters.executor || filters.environment;
+
   useEffect(() => {
     const init = async () => {
-      const [logoRes, projRes, typeRes] = await Promise.all([
-        getLogoURL(),
-        getProjects(),
-        getTypes(),
-      ]);
+      const [logoRes, projRes, typeRes, browserRes, osRes, execRes, envRes] =
+        await Promise.all([
+          getLogoURL(),
+          getProjects(),
+          getTypes(),
+          getBrowsers(),
+          getOS(),
+          getExecutors(),
+          getEnvironments(),
+        ]);
       setLogoUrl(logoRes.data.url);
       setProjects(projRes.data);
       setTypes(typeRes.data);
+      setBrowsers(browserRes.data);
+      setOsList(osRes.data);
+      setExecutors(execRes.data);
+      setEnvironments(envRes.data);
       fetchReports(filters);
     };
     init();
@@ -436,6 +341,11 @@ export default function ReportsPage() {
     }, 500);
     return () => clearTimeout(t);
   }, [debouncedName]);
+
+  // Auto-expand advanced panel if advanced filters are active
+  useEffect(() => {
+    if (hasAdvancedFilters) setShowAdvanced(true);
+  }, []);
 
   const fetchReports = async (f) => {
     const res = await getReports(f);
@@ -480,7 +390,7 @@ export default function ReportsPage() {
     try {
       await patchName(id, { name: editingName });
       setReports((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, name: editingName } : r)),
+        prev.map((r) => (r.id === id ? { ...r, name: editingName } : r))
       );
     } catch (e) {
       console.error(e);
@@ -504,7 +414,6 @@ export default function ReportsPage() {
   const txtSub = dm ? "#cbd5e1" : "#334155";
   const txtMut = dm ? "#E0E0E0" : "#212121";
   const inputBg = dm ? "#0d1930" : "#ffffff";
-  const tblHead = dm ? "#0d1930" : "#f8fafc";
   const acc = "#3b82f6";
 
   const projectOptions = projects.map((p) => ({
@@ -515,6 +424,22 @@ export default function ReportsPage() {
     value: Object.values(t)[0],
     label: Object.values(t)[0],
   }));
+  const browserOptions = browsers.map((b) => ({
+    value: Object.values(b)[0],
+    label: Object.values(b)[0],
+  }));
+  const osOptions = osList.map((o) => ({
+    value: Object.values(o)[0],
+    label: Object.values(o)[0],
+  }));
+  const executorOptions = executors.map((e) => ({
+    value: Object.values(e)[0],
+    label: Object.values(e)[0],
+  }));
+  const environmentOptions = environments.map((e) => ({
+    value: Object.values(e)[0],
+    label: Object.values(e)[0],
+  }));
 
   return (
     <>
@@ -523,6 +448,10 @@ export default function ReportsPage() {
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; }
         @keyframes circleExp { 0%{transform:scale(0);opacity:.7} 100%{transform:scale(90);opacity:0} }
+        @keyframes advancedSlide {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
         .anim-circle { position:fixed;top:0;right:0;width:3rem;height:3rem;border-radius:50%;background:${dm ? "#f1f5f9" : "#060e1f"};z-index:9999;pointer-events:none;animation:circleExp .7s cubic-bezier(.4,0,.2,1) forwards; }
         .pg-btn { transition: background .15s, transform .1s; }
         .pg-btn:hover:not(:disabled) { transform: translateY(-1px); }
@@ -530,6 +459,8 @@ export default function ReportsPage() {
         .tbl-tr:hover td { background: ${dm ? "#0d193090" : "#f8fafc"} !important; }
         .tbl-td { transition: background .12s; }
         .srch:focus { border-color: ${acc} !important; box-shadow: 0 0 0 3px ${acc}22 !important; }
+        .adv-filters-panel { animation: advancedSlide 0.22s ease; }
+        .adv-toggle-btn:hover { border-color: ${acc} !important; color: ${acc} !important; }
       `}</style>
       {animateMode && <span className="anim-circle" />}
 
@@ -680,6 +611,7 @@ export default function ReportsPage() {
               : "0 2px 12px rgba(0,0,0,.05)",
           }}
         >
+          {/* Main filter row */}
           <div
             style={{
               display: "flex",
@@ -758,36 +690,17 @@ export default function ReportsPage() {
             <DateInput
               value={filters.fromDate}
               onChange={(v) => handleFilterChange("fromDate", v)}
+              onClear={() => clearFilter("fromDate")}
               placeholder="From"
               dark={dm}
             />
             <DateInput
               value={filters.toDate}
               onChange={(v) => handleFilterChange("toDate", v)}
+              onClear={() => clearFilter("toDate")}
               placeholder="To"
               dark={dm}
             />
-
-            {(filters.fromDate || filters.toDate) && (
-              <button
-                onClick={() => {
-                  clearFilter("fromDate");
-                  clearFilter("toDate");
-                }}
-                style={{
-                  background: "none",
-                  border: `1.5px solid ${bdr}`,
-                  color: txtMut,
-                  cursor: "pointer",
-                  borderRadius: 10,
-                  padding: "9px 12px",
-                  fontSize: 15,
-                  display: "flex",
-                }}
-              >
-                <FiX />
-              </button>
-            )}
 
             <div
               style={{
@@ -797,9 +710,62 @@ export default function ReportsPage() {
                 marginLeft: "auto",
               }}
             >
-              <span
-                style={{ fontSize: 14, color: txtMut, whiteSpace: "nowrap" }}
+              {/* Advanced filter toggle */}
+              <button
+                className="adv-toggle-btn"
+                onClick={() => setShowAdvanced((s) => !s)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "10px 16px",
+                  borderRadius: 12,
+                  border: `1.5px solid ${hasAdvancedFilters ? acc : bdr}`,
+                  background: hasAdvancedFilters ? `${acc}15` : inputBg,
+                  color: hasAdvancedFilters ? acc : txtMut,
+                  cursor: "pointer",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  fontFamily: "'Plus Jakarta Sans',sans-serif",
+                  transition: "border-color .2s, color .2s, background .2s",
+                  whiteSpace: "nowrap",
+                }}
               >
+                <FiSliders size={15} />
+                Filters
+                {hasAdvancedFilters && (
+                  <span
+                    style={{
+                      background: acc,
+                      color: "#fff",
+                      borderRadius: 99,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: "1px 7px",
+                      marginLeft: 2,
+                    }}
+                  >
+                    {
+                      [
+                        filters.browser,
+                        filters.os,
+                        filters.executor,
+                        filters.environment,
+                      ].filter(Boolean).length
+                    }
+                  </span>
+                )}
+                <FiChevronDown
+                  size={14}
+                  style={{
+                    transform: showAdvanced ? "rotate(180deg)" : "",
+                    transition: "transform .2s",
+                    marginLeft: 2,
+                  }}
+                />
+              </button>
+
+              <span style={{ fontSize: 14, color: txtMut, whiteSpace: "nowrap" }}>
                 Per page:
               </span>
               <CustomSelect
@@ -815,6 +781,73 @@ export default function ReportsPage() {
               />
             </div>
           </div>
+
+          {/* ── Advanced filters panel ── */}
+          {showAdvanced && (
+            <div
+              className="adv-filters-panel"
+              style={{
+                marginTop: 14,
+                paddingTop: 14,
+                borderTop: `1.5px solid ${bdr}`,
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 12,
+                alignItems: "center",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: txtMut,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  whiteSpace: "nowrap",
+                  alignSelf: "center",
+                }}
+              >
+                Advanced
+              </span>
+
+              <CustomSelect
+                value={filters.browser}
+                onChange={(v) => handleFilterChange("browser", v)}
+                options={browserOptions}
+                placeholder="All Browsers"
+                icon={FiGlobe}
+                dark={dm}
+              />
+
+              <CustomSelect
+                value={filters.os}
+                onChange={(v) => handleFilterChange("os", v)}
+                options={osOptions}
+                placeholder="All OS"
+                icon={FiMonitor}
+                dark={dm}
+              />
+
+              <CustomSelect
+                value={filters.executor}
+                onChange={(v) => handleFilterChange("executor", v)}
+                options={executorOptions}
+                placeholder="All Executors"
+                icon={FiServer}
+                dark={dm}
+              />
+
+              <CustomSelect
+                value={filters.environment}
+                onChange={(v) => handleFilterChange("environment", v)}
+                options={environmentOptions}
+                placeholder="All Environments"
+                icon={FiTag}
+                dark={dm}
+              />
+
+            </div>
+          )}
         </div>
 
         {/* ── Grid ── */}
@@ -840,261 +873,17 @@ export default function ReportsPage() {
             ))}
           </div>
         ) : (
-          /* ── Table ── */
-          <div
-            style={{
-              overflowX: "auto",
-              borderRadius: 16,
-              border: `1.5px solid ${bdr}`,
-              boxShadow: dm
-                ? "0 8px 32px rgba(0,0,0,.45)"
-                : "0 4px 20px rgba(0,0,0,.06)",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                background: cardBg,
-              }}
-            >
-              <thead>
-                <tr style={{ background: tblHead }}>
-                  {[
-                    "Name",
-                    "Project",
-                    "Type",
-                    "Date",
-                    "Test Results",
-                    "Pipeline",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      style={{
-                        padding: "15px 18px",
-                        textAlign: "center",
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: txtMut,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.07em",
-                        borderBottom: `1.5px solid ${bdr}`,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {reports?.map((r) => (
-                  <tr key={r.id} className="tbl-tr">
-                    <td
-                      className="tbl-td"
-                      style={{
-                        padding: "14px 18px",
-                        borderBottom: `1px solid ${bdr}`,
-                        background: cardBg,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: 8,
-                        }}
-                      >
-                        {editingReportId === r.id ? (
-                          <input
-                            value={editingName}
-                            onChange={(e) => setEditingName(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleSaveName(r.id);
-                            }}
-                            onBlur={() => handleSaveName(r.id)}
-                            autoFocus
-                            style={{
-                              background: inputBg,
-                              border: `1.5px solid ${acc}`,
-                              borderRadius: 8,
-                              padding: "5px 10px",
-                              color: txtMain,
-                              fontSize: 14,
-                              outline: "none",
-                              width: 170,
-                              fontFamily: "'Plus Jakarta Sans',sans-serif",
-                            }}
-                          />
-                        ) : (
-                          <>
-                            <a
-                              href={r.report || r.report_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                fontSize: 15,
-                                fontWeight: 700,
-                                color: "#60a5fa",
-                                textDecoration: "none",
-                                maxWidth: 200,
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                              onMouseEnter={(e) =>
-                                (e.currentTarget.style.color = "#93c5fd")
-                              }
-                              onMouseLeave={(e) =>
-                                (e.currentTarget.style.color = "#60a5fa")
-                              }
-                            >
-                              {r.name}
-                            </a>
-                            <FiEdit
-                              size={14}
-                              color={txtMut}
-                              style={{ cursor: "pointer", flexShrink: 0 }}
-                              onClick={() => {
-                                setEditingReportId(r.id);
-                                setEditingName(r.name);
-                              }}
-                            />
-                            <span
-                              onClick={() => {
-                                const text = r.report || r.report_url;
-                                
-                                if (navigator.clipboard && navigator.clipboard.writeText) {
-                                  navigator.clipboard.writeText(text);
-                                } else {
-                                  const textarea = document.createElement("textarea");
-                                  textarea.value = text;
-                                  textarea.style.position = "fixed";
-                                  textarea.style.opacity = "0";
-                                  document.body.appendChild(textarea);
-                                  textarea.focus();
-                                  textarea.select();
-                                  document.execCommand("copy");
-                                  document.body.removeChild(textarea);
-                                }
-                                
-                                setCopiedId(r.id);
-                                setTimeout(() => setCopiedId(null), 1500);
-                              }}
-                              style={{
-                                display: "flex",
-                                color: copiedId === r.id ? "#22c55e" : txtMut,
-                                flexShrink: 0,
-                                cursor: "pointer",
-                                transition: "color .2s",
-                              }}
-                              title="Copy report URL"
-                            >
-                              <FiCopy size={14} />
-                            </span>
-                            <a
-                              href={r.minio || r.minio_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                display: "flex",
-                                color: txtMut,
-                                flexShrink: 0,
-                                transition: "color .2s",
-                              }}
-                              onMouseEnter={(e) =>
-                                (e.currentTarget.style.color = "#22c55e")
-                              }
-                              onMouseLeave={(e) =>
-                                (e.currentTarget.style.color = txtMut)
-                              }
-                            >
-                              <FiDownload size={14} />
-                            </a>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td
-                      className="tbl-td"
-                      style={{
-                        padding: "14px 18px",
-                        textAlign: "center",
-                        fontSize: 15,
-                        color: txtSub,
-                        borderBottom: `1px solid ${bdr}`,
-                        background: cardBg,
-                      }}
-                    >
-                      {r.project}
-                    </td>
-                    <td
-                      className="tbl-td"
-                      style={{
-                        padding: "14px 18px",
-                        textAlign: "center",
-                        borderBottom: `1px solid ${bdr}`,
-                        background: cardBg,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 15,
-                          fontWeight: 700,
-                          color: txtSub,
-                          background: dm ? "#1a2e4a" : "#f1f5f9",
-                          padding: "3px 10px",
-                          borderRadius: 8,
-                          fontFamily: "monospace",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {r.type}
-                      </span>
-                    </td>
-                    <td
-                      className="tbl-td"
-                      style={{
-                        padding: "14px 18px",
-                        textAlign: "center",
-                        fontSize: 15,
-                        color: txtSub,
-                        borderBottom: `1px solid ${bdr}`,
-                        fontFamily: "monospace",
-                        whiteSpace: "nowrap",
-                        background: cardBg,
-                      }}
-                    >
-                      {dayjs(r.upload_date).format("D MMM YY · HH:mm")}
-                    </td>
-                    <td
-                      className="tbl-td"
-                      style={{
-                        padding: "14px 18px",
-                        textAlign: "center",
-                        borderBottom: `1px solid ${bdr}`,
-                        background: cardBg,
-                      }}
-                    >
-                      <StatusCell status={r.status} />
-                    </td>
-                    <td
-                      className="tbl-td"
-                      style={{
-                        padding: "14px 18px",
-                        textAlign: "center",
-                        borderBottom: `1px solid ${bdr}`,
-                        background: cardBg,
-                      }}
-                    >
-                      <PipelineCell status={r.status} dark={dm} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ReportsTable
+            reports={reports}
+            darkMode={darkMode}
+            editingReportId={editingReportId}
+            editingName={editingName}
+            setEditingName={setEditingName}
+            setEditingReportId={setEditingReportId}
+            handleSaveName={handleSaveName}
+            copiedId={copiedId}
+            setCopiedId={setCopiedId}
+          />
         )}
 
         {/* ── Pagination ── */}
@@ -1147,7 +936,7 @@ export default function ReportsPage() {
                 >
                   {p}
                 </button>
-              ),
+              )
             )}
             <button
               className="pg-btn"
@@ -1173,7 +962,24 @@ export default function ReportsPage() {
         {showModal && (
           <AddReportModal
             onClose={() => setShowModal(false)}
-            onAdd={() => fetchReports(filters)}
+            onAdd={async () => {
+              const [projRes, typeRes, browserRes, osRes, execRes, envRes] =
+                await Promise.all([
+                  getProjects(),
+                  getTypes(),
+                  getBrowsers(),
+                  getOS(),
+                  getExecutors(),
+                  getEnvironments(),
+                ]);
+              setProjects(projRes.data);
+              setTypes(typeRes.data);
+              setBrowsers(browserRes.data);
+              setOsList(osRes.data);
+              setExecutors(execRes.data);
+              setEnvironments(envRes.data);
+              fetchReports(filters);
+            }}
             projects={projects}
             types={types}
           />
