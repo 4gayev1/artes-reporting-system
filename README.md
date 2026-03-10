@@ -191,15 +191,6 @@ POST /report
 | file                 | ✅        | HTML file or ZIP                                                              |
 | type                 | ❌        | Report type (`ui`, `api`, etc.), default: `unknown`                           |
 | project              | ❌        | Project name, default: `unknown`                                              |
-| failed               | ❌        | Number of failed tests (optional; overridden if ZIP contains prometheusData)  |
-| broken               | ❌        | Number of broken tests (optional; overridden if ZIP contains prometheusData)  |
-| passed               | ❌        | Number of passed tests (optional; overridden if ZIP contains prometheusData)  |
-| skipped              | ❌        | Number of skipped tests (optional; overridden if ZIP contains prometheusData) |
-| unknown              | ❌        | Number of unknown tests (optional; overridden if ZIP contains prometheusData) |
-| pipeline_status      | ❌        | Status of the pipeline (e.g., success, failed, running)                       |
-| pipeline_url         | ❌        | URL to the pipeline/build                                                     |
-| pipeline_name        | ❌        | Name of the pipeline or build                                                 |
-| pipeline_build_order | ❌        | Numeric order of the build in the pipeline                                    |
 
 
 ---
