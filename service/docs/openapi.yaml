@@ -109,7 +109,7 @@ paths:
                 type: array
                 items:
                   type: string
-
+   
   /api/projects:
     get:
       summary: Get all projects
@@ -124,6 +124,62 @@ paths:
                 items:
                   type: string
 
+  /api/browsers:
+    get:
+      tags: [Reports]
+      summary: Get browsers
+      responses:
+        "200":
+          description: List of browsers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/os:
+    get:
+      tags: [Reports]
+      summary: Get OS
+      responses:
+        "200":
+          description: List of OS
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/executors:
+    get:
+      tags: [Reports]
+      summary: Get executors
+      responses:
+        "200":
+          description: List of executors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /api/environments:
+    get:
+      tags: [Reports]
+      summary: Get environments
+      responses:
+        "200":
+          description: List of environments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  
   /api/report/{id}:
     patch:
       summary: Change report name
