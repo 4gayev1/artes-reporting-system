@@ -796,19 +796,6 @@ export default function ReportsPage() {
                 alignItems: "center",
               }}
             >
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: txtMut,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  whiteSpace: "nowrap",
-                  alignSelf: "center",
-                }}
-              >
-                Advanced
-              </span>
 
               <CustomSelect
                 value={filters.browser}
