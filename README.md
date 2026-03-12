@@ -4,13 +4,12 @@
 
 <h1 align="center">Artes Reporting System</h1>
 
-[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/u/vahidaghayev)
-![Node.js](https://img.shields.io/badge/nodejs-backend-green)
-![PostgreSQL](https://img.shields.io/badge/postgres-database-blue)
-![MinIO](https://img.shields.io/badge/minio-object--storage-orange)
-<a href="https://www.apache.org/licenses/LICENSE-2.0">
-  <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="Apache 2.0 License">
-</a>
+[![Docker Artes](https://img.shields.io/badge/Docker-Artes-blue?logo=docker&logoColor=white)](https://hub.docker.com/r/vahidaghayev)
+[![GitHub Artes](https://img.shields.io/badge/GitHub-Artes-181717?logo=github&logoColor=white)](https://github.com/4gayev1/Artes-Reporting-System)
+[![Node.js](https://img.shields.io/badge/nodejs-backend-green)](https://nodejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/postgres-database-blue)](https://www.postgresql.org/)
+[![MinIO](https://img.shields.io/badge/minio-object--storage-orange)](https://min.io/)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 **Artes Reporting System** is a lightweight report hosting platform for QA and automation teams.
 It allows uploading, storing, filtering, and previewing **HTML** and **Allure** reports via **UI** or **REST API**.
