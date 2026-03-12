@@ -4,11 +4,13 @@
 
 <h1 align="center">Artes Reporting System</h1>
 
-![Docker](https://img.shields.io/badge/docker-ready-blue)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://hub.docker.com/u/vahidaghayev)
 ![Node.js](https://img.shields.io/badge/nodejs-backend-green)
 ![PostgreSQL](https://img.shields.io/badge/postgres-database-blue)
 ![MinIO](https://img.shields.io/badge/minio-object--storage-orange)
-![License](https://img.shields.io/badge/license-internal-lightgrey)
+<a href="https://www.apache.org/licenses/LICENSE-2.0">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="Apache 2.0 License">
+</a>
 
 **Artes Reporting System** is a lightweight report hosting platform for QA and automation teams.
 It allows uploading, storing, filtering, and previewing **HTML** and **Allure** reports via **UI** or **REST API**.
