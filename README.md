@@ -318,8 +318,6 @@ volumes:
   minio_data:
 ```
 
----
-
 ### Run
 
 ```bash
@@ -336,6 +334,51 @@ docker compose up --build
 | UI            | 80    |
 | MinIO Console | 9001  |
 | PostgreSQL    | 5432  |
+
+---
+
+## ⚠️ Storage Management
+
+Artes Reporting System does not automatically clean up old reports. Over time, stored reports will consume disk space, and if left unmanaged, **the system may stop functioning** due to full storage.
+
+To prevent this, you should adopt one of the following strategies:
+
+### Option 1 — Scheduled Cleanup via API or function (Cron Job)
+
+Set up a cron job to periodically delete old reports using the bulk delete endpoint:
+```bash
+# Example: Delete all reports from a specific project every Sunday at midnight
+0 0 * * 0 curl -X DELETE "http://localhost/reports?project=my-project"
+```
+
+> ⚠️ Calling `DELETE /reports` **without any filters** will permanently remove **all reports** from both the database and MinIO.
+
+---
+
+### Option 2 — MinIO Bucket Lifecycle Policy
+
+Configure an automatic expiration policy directly on your MinIO bucket so that objects are deleted after a set number of days.
+
+#### Via MinIO Console (UI)
+
+1. Open MinIO Console at `http://localhost:9001`
+2. Login with your credentials (`artes` / `artes123` by default)
+3. Navigate to **Buckets** → select **artes-reports**
+4. Click on the **Lifecycle** tab
+5. Click **Add Lifecycle Rule**
+6. Set the following:
+   - **Expiry** → toggle it on
+   - **After** → enter the number of days (e.g. `30`)
+7. Click **Save**
+
+> MinIO will now automatically delete objects older than the specified number of days.
+
+#### Via CLI
+```bash
+mc ilm rule add --expiry-days 30 local/artes-reports
+```
+
+This will automatically remove any report files older than 30 days at the storage level.
 
 ---
 

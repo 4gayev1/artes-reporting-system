@@ -249,8 +249,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
       responses:
         "200":
           description: Report deleted
