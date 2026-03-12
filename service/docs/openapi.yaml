@@ -73,11 +73,47 @@ paths:
                     report_url:
                       type: string
     delete:
-      summary: Delete all reports
       tags: [Reports]
+      summary: Delete all reports
+      parameters:
+        - in: query
+          name: project
+          schema:
+            type: string
+          description: Filter by project name (partial match)
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter by report name (partial match)
+        - in: query
+          name: type
+          schema:
+            type: string
+          description: Filter by report type (exact match)
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: Filter by exact upload date (YYYY-MM-DD)
+        - in: query
+          name: fromDate
+          schema:
+            type: string
+            format: date-time
+          description: Filter reports uploaded from this date
+        - in: query
+          name: toDate
+          schema:
+            type: string
+            format: date-time
+          description: Filter reports uploaded up to this date
       responses:
         "200":
-          description: All reports deleted
+          description: All matching reports deleted
+        "404":
+          description: No reports found to delete
 
   /api/preview/{id}:
     get:
@@ -206,16 +242,33 @@ paths:
           description: Report not found
 
     delete:
-      summary: Delete report by ID
       tags: [Reports]
+      summary: Delete report by id
       parameters:
         - name: id
           in: path
           required: true
           schema:
-            type: string
+            type: integer
+            example: 1
       responses:
         "200":
           description: Report deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Report deleted successfully"
         "404":
-          description: Report not found
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Report not found"

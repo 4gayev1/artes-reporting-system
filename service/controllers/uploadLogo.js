@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const BUCKET_NAME = "logo";
 const LOGO_FILE_NAME = "logo";
-const LOCAL_LOGO_PATH = path.join(__dirname, "../assets/artes-logo.png");
+const LOCAL_LOGO_PATH = path.join(__dirname, "../assets/ars-logo.png");
 
 async function ensureBucket() {
   try {

@@ -44,7 +44,7 @@ async function deleteAll(req, res) {
       : "";
 
     const selectQuery = `
-      SELECT id, report_url
+      SELECT id, minio_url
       FROM reports
       ${whereSQL}
     `;
@@ -57,9 +57,13 @@ async function deleteAll(req, res) {
 
     await Promise.all(
       rows.map((report) => {
-        const objectName = report.report_url.split("/").slice(4).join("/");
+        const fileUrl = new URL(report.minio_url);
+        const pathParts = fileUrl.pathname.split("/").filter(Boolean);
+        const bucket = pathParts[0];
+        const objectName = decodeURIComponent(pathParts.slice(1).join("/"));
+
         return minioClient
-          .removeObject("artes-reports", objectName)
+          .removeObject(bucket, objectName)
           .catch((err) => {
             console.warn(`MinIO delete failed: ${objectName}`, err.message);
           });

@@ -5,9 +5,7 @@ async function deleteById(req, res) {
   try {
     const { id } = req.params;
 
-    const result = await pool.query("SELECT * FROM reports WHERE id = $1", [
-      id,
-    ]);
+    const result = await pool.query("SELECT * FROM reports WHERE id = $1", [id]);
 
     if (!result.rows.length) {
       return res.status(404).json({ error: "Report not found" });
@@ -15,11 +13,14 @@ async function deleteById(req, res) {
 
     const report = result.rows[0];
 
-    const fileUrlParts = report.report_url.split("/");
-    const objectName = fileUrlParts.slice(4).join("/");
+    const fileUrl = new URL(report.minio_url);
+    const pathParts = fileUrl.pathname.split("/").filter(Boolean);
 
-    await minioClient.removeObject("artes-reports", objectName);
+    
+    const bucket = pathParts[0];                 
+    const objectName = decodeURIComponent(pathParts.slice(1).join("/"));
 
+    await minioClient.removeObject(bucket, objectName);
     await pool.query("DELETE FROM reports WHERE id = $1", [id]);
 
     res.json({ message: "Report deleted successfully" });
