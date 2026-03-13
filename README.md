@@ -18,21 +18,21 @@ It allows uploading, storing, filtering, and previewing **HTML** and **Allure** 
 
 ### Grid/List layout
 
-<img width="1511" height="822" alt="preview 1" src="https://github.com/user-attachments/assets/f75cbdc4-ece0-46f3-a674-8a6b407e421b" />
+<img width="1511" height="822" alt="preview 1" src="https://github.com/user-attachments/assets/e62a67c8-124c-4c86-9ce7-da33fb58eefd" />
 
-<img width="1512" height="823" alt="image" src="https://github.com/user-attachments/assets/5e0eda0d-4915-4608-a5d1-9fe1b2b5e8d5" />
+<img width="1512" height="823" alt="preview 2" src="https://github.com/user-attachments/assets/e6f0de83-d924-4816-9671-404a640a75d8" />
 
 ### Dark/light mode
 
-<img width="1510" height="820" alt="preview 3" src="https://github.com/user-attachments/assets/682a6536-f2b0-4d1e-a15f-bcbf4b1d9b8e" />
+<img width="1510" height="820" alt="preview 3" src="https://github.com/user-attachments/assets/31bad45c-0684-49a4-a1ea-0ae91a12df11" />
 
 ## Upload Report
 
-<img width="1919" height="955" alt="preview 4" src="https://github.com/user-attachments/assets/a2098afb-306b-4f55-8937-1bddb2ecaa18" />
+<img width="1919" height="955" alt="preview 4" src="https://github.com/user-attachments/assets/504e7986-5ddd-414a-a36c-fd68c855f96b" />
 
 ## Report Preview
 
-<img width="1511" height="821" alt="preview 4" src="https://github.com/user-attachments/assets/99b5fd6c-d9e8-44d5-bb20-2762388e1ccf" />
+<img width="1511" height="821" alt="preview 5" src="https://github.com/user-attachments/assets/99b5fd6c-d9e8-44d5-bb20-2762388e1ccf" />
 
 ---
 
