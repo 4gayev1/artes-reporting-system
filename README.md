@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="ARS-Logo" src="https://github.com/user-attachments/assets/7c7c51e2-3044-4360-b727-a89a883fdfc6" width="280">
+  <img alt="ARS-Logo" src="https://github.com/user-attachments/assets/d7b07237-8342-46fe-8ae7-66a03b88fb27" width="280">
 </p>
 
 <h1 align="center">Artes Reporting System</h1>
